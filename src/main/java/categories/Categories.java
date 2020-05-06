@@ -7,7 +7,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class Categories {
 
-    private By topMenu = By.id("block_top_menu");
+    private String topMenu = "#block_top_menu";
 
     public void clickOnCategoryElement(String category) {
         $(topMenu)

@@ -1,21 +1,15 @@
 import categories.Categories;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.impl.Waiter;
+import com.codeborne.selenide.SelenideElement;
+import constants.FilterGroup;
 import constants.URL;
 import filteres.FilterProducts;
 import org.junit.jupiter.api.*;
 
-//import categories.Categories;
-import constants.FilterGroup;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.closeWindow;
+import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FilterTest {
@@ -35,7 +29,7 @@ public class FilterTest {
     @Test
     @Order(2)
     void filterProductByColor() {
-        WebElement color = filterProducts.getFilterProductsBy("Orange", FilterGroup.COLOR);
+        SelenideElement color = filterProducts.getFilterProductsBy("Orange", FilterGroup.COLOR);
         color.click();
 
         assertFalse(filterProducts.getLoadingElement().isDisplayed());
@@ -44,20 +38,14 @@ public class FilterTest {
         int actualProductNumber = filterProducts.getProductsContainer().size();
         assertEquals(expectedProductNumber, actualProductNumber);
 
-        List<WebElement> elements = filterProducts.getColorContainer();
-        elements.forEach((webElement) -> {
-            List<WebElement> listOfProductLinks = webElement.findElements(By.tagName("a"))
-                    .stream()
-                    .filter(webElement1 -> webElement1.getAttribute("href").contains("orange"))
-                    .collect(Collectors.toList());
-            assertFalse(listOfProductLinks.isEmpty());
-        });
+        filterProducts.getColorContainer().forEach(selenideElement ->
+                assertFalse(filterProducts.getListOfColorLinks(selenideElement).isEmpty()));
     }
 
     @Test
     @Order(1)
     void filterProductBySize() {
-        WebElement size = filterProducts.getFilterProductsBy("S", FilterGroup.SIZE);
+        SelenideElement size = filterProducts.getFilterProductsBy("S", FilterGroup.SIZE);
         size.click();
 
         assertFalse(filterProducts.getLoadingElement().isDisplayed());

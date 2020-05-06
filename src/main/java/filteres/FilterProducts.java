@@ -1,48 +1,56 @@
 package filteres;
 
 import com.codeborne.selenide.Condition;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import com.codeborne.selenide.SelenideElement;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
 
 public class FilterProducts {
 
-    private By leftColumn = By.id("left_column");
-    private By centerColumn = By.id("center_column");
-    private By colorContainer = By.xpath("//div[@class='color-list-container']");
-    private By productContainer = By.xpath("//div[@class='product-container']");
+    private String leftColumn = "#left_column";
+    private String centerColumn = "#center_column";
+    private String colorContainer = ".color-list-container";
+    private String productContainer = ".product-container";
 
-    public WebElement getFilterProductsBy(String filter, String idAttributeGroup) {
-        return  $(leftColumn)
-                .$(By.id(idAttributeGroup))
-                .$$(By.tagName("a"))
+    public SelenideElement getFilterProductsBy(String filter, String idAttributeGroup) {
+        return $(leftColumn)
+                .$(idAttributeGroup)
+                .$$("a")
                 .filterBy(Condition.text(filter))
                 .get(0);
     }
 
-    public List<WebElement> getColorContainer() {
+    public List<SelenideElement> getColorContainer() {
         return getCenterColumn()
-                .findElements(colorContainer);
+                .$$(colorContainer);
     }
 
-    public List<WebElement> getProductsContainer() {
+    public List<SelenideElement> getProductsContainer() {
         return getCenterColumn()
-                .findElements(productContainer);
+                .$$(productContainer);
     }
 
-    public int getNumberProductsWereFiltered(WebElement webElement){
-        String productNumberOnFilter = webElement.findElement(By.tagName("span")).getText();
+    public int getNumberProductsWereFiltered(SelenideElement webElement) {
+        String productNumberOnFilter = webElement.$("span").getText();
         return Integer.parseInt(productNumberOnFilter.replace("(", "").replace(")", ""));
     }
 
-    public WebElement getLoadingElement() {
-        return getCenterColumn().findElement(By.tagName("p"));
+    public SelenideElement getLoadingElement() {
+        return getCenterColumn().$("p");
     }
 
-    private WebElement getCenterColumn(){
+    public List<SelenideElement> getListOfColorLinks(SelenideElement selenideElement) {
+        return selenideElement.$$("a")
+                .stream()
+                .filter(webElement1 -> webElement1.getAttribute("href").contains("orange"))
+                .collect(Collectors.toList());
+
+    }
+
+    private SelenideElement getCenterColumn() {
         return $(centerColumn);
     }
 
